@@ -303,12 +303,19 @@ def main(page: ft.Page):
 
 
 if __name__ == "__main__":
-    print("🚀 Iniciando servidor web en http://localhost:8080")
+    import os
+    
+    # Obtener puerto de variable de entorno (para deployment)
+    port = int(os.environ.get("PORT", 8080))
+    host = os.environ.get("HOST", "0.0.0.0")
+    
+    print(f"🚀 Iniciando servidor web en http://{host}:{port}")
     print("📱 Abre esta URL en tu móvil para usar la cámara")
     
     ft.app(
         target=main,
         view=ft.AppView.WEB_BROWSER,
-        port=8080,
-        host="0.0.0.0"  # Permitir conexiones desde otros dispositivos
+        port=port,
+        host=host,
+        web_renderer="canvaskit"  # Mejor compatibilidad en producción
     )

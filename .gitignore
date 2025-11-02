@@ -130,6 +130,13 @@ photos/*.jpeg
 photos/*.png
 config.json
 
+# Deployment specific
+.railway/
+.vercel/
+.env.local
+.env.production
+*.log
+
 # Temporary files
 *.tmp
 *.temp
