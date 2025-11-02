@@ -85,14 +85,23 @@ async function handleAPI(request, env, corsHeaders) {
         });
       }
 
-      // Procesar frame (por ahora solo log - se puede expandir con KV/R2 después)
-      // TODO: Agregar storage si es necesario
-      // if (env.CAMERA_DATA) {
-      //   const frameId = `frame_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      //   await env.CAMERA_DATA.put(frameId, JSON.stringify(frameData), {
-      //     expirationTtl: 300 // 5 minutos
-      //   });
-      // }
+      // Almacenar frame temporalmente en memoria (para el último frame)
+      // Esto permite que el PC pueda obtener el frame más reciente
+      global.latestFrame = {
+        frame: frameData.frame,
+        timestamp: frameData.timestamp,
+        frameNumber: frameData.frameNumber || 0,
+        receivedAt: Date.now()
+      };
+      
+      // Mantener solo el último frame para streaming en tiempo real
+      global.frameHistory = global.frameHistory || [];
+      global.frameHistory.push(global.latestFrame);
+      
+      // Mantener solo los últimos 10 frames
+      if (global.frameHistory.length > 10) {
+        global.frameHistory = global.frameHistory.slice(-10);
+      }
 
       // Log para debugging
       console.log(`Frame received: ${frameData.frameNumber || 'unknown'} at ${new Date(frameData.timestamp).toISOString()}`);
@@ -127,28 +136,17 @@ async function handleAPI(request, env, corsHeaders) {
   // Endpoint para obtener frames recientes
   if (path === '/api/frames' && request.method === 'GET') {
     try {
-      // Por ahora retorna estructura vacía - se puede expandir con KV después
-      const frames = [];
+      // Obtener frames desde memoria temporal
+      const frames = global.frameHistory || [];
+      const latestFrame = global.latestFrame || null;
       
-      // TODO: Implementar con KV storage si es necesario
-      // if (env.CAMERA_DATA) {
-      //   const list = await env.CAMERA_DATA.list({ prefix: 'frame_' });
-      //   for (const key of list.keys.slice(0, 10)) {
-      //     const frameData = await env.CAMERA_DATA.get(key.name, 'json');
-      //     if (frameData) {
-      //       frames.push({
-      //         id: key.name,
-      //         ...frameData
-      //       });
-      //     }
-      //   }
-      // }
-
+      // Respuesta con frames disponibles
       return new Response(JSON.stringify({
         frames: frames,
+        latestFrame: latestFrame,
         count: frames.length,
         timestamp: Date.now(),
-        message: 'Frame storage not configured - frames processed in real-time'
+        message: frames.length > 0 ? 'Frames available from mobile device' : 'No frames received yet'
       }), {
         status: 200,
         headers: {
@@ -172,13 +170,64 @@ async function handleAPI(request, env, corsHeaders) {
     }
   }
 
+  // Endpoint para obtener solo el último frame (más eficiente)
+  if (path === '/api/latest-frame' && request.method === 'GET') {
+    try {
+      const latestFrame = global.latestFrame || null;
+      
+      if (latestFrame) {
+        return new Response(JSON.stringify({
+          success: true,
+          frame: latestFrame,
+          timestamp: Date.now()
+        }), {
+          status: 200,
+          headers: {
+            'Content-Type': 'application/json',
+            ...corsHeaders
+          }
+        });
+      } else {
+        return new Response(JSON.stringify({
+          success: false,
+          message: 'No frame available yet',
+          timestamp: Date.now()
+        }), {
+          status: 200,
+          headers: {
+            'Content-Type': 'application/json',
+            ...corsHeaders
+          }
+        });
+      }
+    } catch (error) {
+      return new Response(JSON.stringify({
+        success: false,
+        error: 'Failed to get latest frame',
+        message: error.message
+      }), {
+        status: 500,
+        headers: {
+          'Content-Type': 'application/json',
+          ...corsHeaders
+        }
+      });
+    }
+  }
+
   // Endpoint para health check
   if (path === '/api/health' && request.method === 'GET') {
+    const framesCount = global.frameHistory ? global.frameHistory.length : 0;
+    const hasLatestFrame = !!global.latestFrame;
+    
     return new Response(JSON.stringify({
       status: 'healthy',
       timestamp: Date.now(),
       worker: 'ip-camera-mobile-web',
-      version: '2.0.0'
+      version: '2.1.0',
+      framesReceived: framesCount,
+      latestFrameAvailable: hasLatestFrame,
+      lastFrameTime: global.latestFrame ? global.latestFrame.receivedAt : null
     }), {
       status: 200,
       headers: {
