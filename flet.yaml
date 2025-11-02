@@ -1,0 +1,33 @@
+name: IP Camera App
+description: Aplicación avanzada para cámaras IP móviles
+
+# The name of the module as an identifier, used for packaging.
+package: com.ipcamera.app
+
+# Supported platforms: web, macos, linux, windows, ios, android
+platforms:
+  - android
+
+# Application icons
+icons:
+  - path: assets/icon.png
+    
+# Android specific configuration
+android:
+  # Android package name (required for Android)
+  package: com.ipcamera.app
+  
+  # App permissions
+  permissions:
+    - android.permission.INTERNET
+    - android.permission.CAMERA
+    - android.permission.WRITE_EXTERNAL_STORAGE
+    - android.permission.READ_EXTERNAL_STORAGE
+    - android.permission.ACCESS_NETWORK_STATE
+    - android.permission.ACCESS_WIFI_STATE
+  
+  # Minimum SDK version
+  min_sdk_version: 21
+  
+  # Target SDK version  
+  target_sdk_version: 33

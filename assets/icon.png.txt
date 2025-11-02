@@ -1,0 +1,2 @@
+# Placeholder for app icon
+# Add a 512x512 PNG icon here named icon.png
