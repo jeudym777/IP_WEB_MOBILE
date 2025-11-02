@@ -1,31 +1,15 @@
-name = "ip-web-mobile"
+name = "ipwebmobile"
 main = "worker.js"
 compatibility_date = "2024-10-01"
 compatibility_flags = ["nodejs_compat"]
-
-[env.production]
-name = "ip-web-mobile"
-route = "camera.tu-dominio.com/*"
 
 [vars]
 ENVIRONMENT = "production"
 FLET_WEB_USE_COLOR_EMOJI = "true"
 
-# Para usar KV storage (opcional)
-[[kv_namespaces]]
-binding = "CAMERA_DATA"
-id = "tu_kv_namespace_id"
+# Configuración simplificada sin KV/R2 por ahora
+# Se pueden agregar después si es necesario
 
-# Para usar R2 storage (opcional - para fotos/videos)
-[[r2_buckets]]
-binding = "MEDIA_BUCKET"
-bucket_name = "ip-camera-media"
-
-# Configuración de rutas
-[[routes]]
-pattern = "camera.tu-dominio.com/api/*"
-zone_name = "tu-dominio.com"
-
-# Variables de entorno sensibles (usar wrangler secret)
+# Variables de entorno sensibles (usar wrangler secret si es necesario)
 # wrangler secret put DATABASE_URL
 # wrangler secret put API_KEY
