@@ -1,0 +1,52 @@
+{
+  "name": "ip-web-mobile",
+  "version": "2.0.0",
+  "description": "IP Camera Mobile Web System powered by Cloudflare",
+  "main": "worker.js",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "build": "python build_for_pages.py",
+    "pages:build": "python build_for_pages.py",
+    "pages:dev": "wrangler pages dev dist",
+    "pages:deploy": "wrangler pages deploy dist",
+    "test": "python test_system.py"
+  },
+  "keywords": [
+    "ip-camera",
+    "mobile-web",
+    "cloudflare",
+    "edge-computing",
+    "camera-streaming",
+    "python",
+    "flet"
+  ],
+  "author": "Jeudy Martinez",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jeudym777/IP_WEB_MOBILE.git"
+  },
+  "devDependencies": {
+    "wrangler": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "cloudflare": {
+    "pages": {
+      "build": {
+        "command": "python build_for_pages.py",
+        "output": "dist/"
+      },
+      "env": {
+        "PYTHON_VERSION": "3.10",
+        "FLET_WEB_USE_COLOR_EMOJI": "true"
+      }
+    },
+    "workers": {
+      "main": "worker.js",
+      "compatibility_date": "2024-10-01"
+    }
+  }
+}

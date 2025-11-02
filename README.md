@@ -53,13 +53,24 @@ Una aplicación Python moderna construida con **Flet** que revoluciona la transm
 
 ## 🎯 Uso Rápido
 
-### 🚀 Launcher Automático (Recomendado)
+### 🌐 **Cloudflare Deployment** (NUEVO - RECOMENDADO)
+Deploy global ultra-rápido con CDN edge:
+```bash
+# Setup inicial (una sola vez)
+./cloudflare-deploy.bat setup
+
+# Deploy completo
+./cloudflare-deploy.bat both
+```
+¡Tu app estará disponible globalmente en minutos!
+
+### 🚀 Launcher Automático (Local)
 ```bash
 python start.py
 ```
 Selecciona tu opción preferida del menú interactivo.
 
-### 📱 Sistema Web Móvil (NUEVO)
+### 📱 Sistema Web Móvil (Local)
 
 1. **Ejecutar App Web**:
    ```bash
